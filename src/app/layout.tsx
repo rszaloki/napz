@@ -1,30 +1,14 @@
 import './globals.css';
 import { ReactNode } from 'react';
-import { headers } from 'next/headers';
 import AuthContext from '@/components/AuthContext';
-import { Session } from 'next-auth';
 import { AppHeader } from '@/components/AppHeader';
 
 export interface RootLayoutProps {
   children: ReactNode;
 }
 
-async function getSession(cookie: string): Promise<Session | null> {
-  const host = headers().get('host');
-  const sessionUrl = `http://${host}/api/auth/session`;
-  const response = await fetch(sessionUrl, {
-    headers: {
-      cookie
-    }
-  });
-
-  const session = await response.json();
-
-  return Object.keys(session).length > 0 ? session : null;
-}
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-  const session = await getSession(headers().get('cookie') ?? '');
 
   return (
     <html lang="en">
@@ -34,7 +18,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
-        <AuthContext session={session}><AppHeader />{children}</AuthContext>
+        <AuthContext><AppHeader />{children}</AuthContext>
       </body>
     </html>
   );
